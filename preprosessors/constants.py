@@ -1,1 +1,1 @@
-PREPROCESSED_DATA_DIR = "./preprocessed-data"
+PREPROCESSED_DATA_DIR = "./data/preprocessed"

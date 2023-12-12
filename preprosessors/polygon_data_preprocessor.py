@@ -1,19 +1,21 @@
 import json
 import logging
 import os
+from typing import List
 
 import pandas as pd
 
-from constants import FINANCIALS_DATA_DIR, TICKERS
+from preprosessors.base_preprocessor import BasePreprocessor
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-class FinancialsDataPreprocessor:
-    data_dir = FINANCIALS_DATA_DIR
+class PolygonFinancialsDataPreprocessor(BasePreprocessor):
+    def __init__(self, source_dir_path: str, save_dir: str = "polygon/financials/"):
+        super().__init__(source_dir_path, save_dir)
 
-    def run(self):
+    def run(self, tickers: List[str]):
         data = {
             "ticker": [],
             "fiscal_period": [],
@@ -23,7 +25,7 @@ class FinancialsDataPreprocessor:
             "gross_profit": [],
             "unit": [],
         }
-        for ticker in TICKERS:
+        for ticker in tickers:
             logger.info(f"Preprocessing {ticker} data ...")
             raw_data = self._load_data(ticker)
             for date, item in raw_data.items():
@@ -64,14 +66,12 @@ class FinancialsDataPreprocessor:
                 data["revenue"].append(item.get("revenues").get("value"))
                 data["gross_profit"].append(item.get("gross_profit").get("value"))
                 data["unit"].append(item.get("revenues").get("unit"))
-        pd.DataFrame.from_dict(data).to_csv("./financials.csv")
+
+        pd.DataFrame.from_dict(data).to_csv(
+            os.path.join(self.save_dir_path, "financials.csv")
+        )
 
     def _load_data(self, ticker: str) -> dict:
-        with open(os.path.join(self.data_dir, f"{ticker}.json"), "r") as f:
+        with open(os.path.join(self.source_dir_path, f"{ticker}.json"), "r") as f:
             data = json.load(f)
         return data
-
-
-if __name__ == "__main__":
-    preprocessor = FinancialsDataPreprocessor()
-    preprocessor.run()
