@@ -20,3 +20,19 @@ source .venv/bin/activate
 ```bash
 make init
 ```
+
+## Other Setups
+
+### Polygon
+
+#### 1. (Optional) Creating .env file
+
+```bash
+touch .env
+```
+
+#### 2. Adding polygon api key.
+
+```
+POLYGON_API_KEY=xxx
+```
