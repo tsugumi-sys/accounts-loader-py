@@ -12,7 +12,6 @@ For example,
 
 ```bash
 source .venv/bin/activate
-  
 ```
 
 ### 3. Installing packages
