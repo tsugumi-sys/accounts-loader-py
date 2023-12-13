@@ -5,7 +5,7 @@ from typing import List
 
 import pandas as pd
 
-from preprosessors.base_preprocessor import BasePreprocessor
+from preprocessors.base import BasePreprocessor
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +15,7 @@ class PolygonFinancialsDataPreprocessor(BasePreprocessor):
     def __init__(self, source_dir_path: str, save_dir: str = "polygon/financials/"):
         super().__init__(source_dir_path, save_dir)
 
-    def run(self, tickers: List[str]):
+    def preprocess(self, tickers: List[str]):
         data = {
             "ticker": [],
             "fiscal_period": [],

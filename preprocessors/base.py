@@ -1,12 +1,10 @@
 import os
 from abc import ABC, abstractmethod
 
-from preprosessors.constants import PREPROCESSED_DATA_DIR
+from preprocessors.common import PREPROCESSED_DATA_DIR
 
 
 class BasePreprocessor(ABC):
-    SAVE_ROOT_DIR = PREPROCESSED_DATA_DIR
-
     def __init__(self, source_dir_path: str, save_dir: str):
         if save_dir is None:
             raise ValueError("`save_dir` should be str, instead of None.")
@@ -18,8 +16,8 @@ class BasePreprocessor(ABC):
 
     @property
     def save_dir_path(self):
-        return os.path.join(self.SAVE_ROOT_DIR, self.save_dir)
+        return os.path.join(PREPROCESSED_DATA_DIR, self.save_dir)
 
     @abstractmethod
-    def run(self, *args, **kwargs):
+    def process(self, *args, **kwargs):
         pass

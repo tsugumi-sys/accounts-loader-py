@@ -6,7 +6,7 @@ import os
 
 import requests
 
-from data_loader.base_data_loader import BaseDataLoader
+from data_loaders.base import BaseDataLoader
 
 
 logger = logging.getLogger(__name__)

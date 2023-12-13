@@ -1,12 +1,10 @@
 import os
 from abc import ABC, abstractmethod
 
-from data_loader.constants import RAW_DATA_DIR
+from data_loaders.common import RAW_DATA_DIR
 
 
 class BaseDataLoader(ABC):
-    SAVE_ROOT_DIR = RAW_DATA_DIR
-
     def __init__(self, save_dir: str):
         if save_dir is None:
             raise ValueError("`save_dir` should be str, instead of None.")
@@ -15,7 +13,7 @@ class BaseDataLoader(ABC):
 
     @property
     def save_dir_path(self):
-        return os.path.join(self.SAVE_ROOT_DIR, self.save_dir)
+        return os.path.join(RAW_DATA_DIR, self.save_dir)
 
     @abstractmethod
     def download(self, *args, **kwargs):
