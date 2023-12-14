@@ -1,20 +1,16 @@
-import os
 from abc import ABC, abstractmethod
 
-from data_loaders.common import RAW_DATA_DIR
+from stores.artifact.base import ArtifactRepository
 
 
-class BaseDataLoader(ABC):
-    def __init__(self, save_dir: str):
-        if save_dir is None:
-            raise ValueError("`save_dir` should be str, instead of None.")
-        self.save_dir = save_dir
-        os.makedirs(self.save_dir_path, exist_ok=True)
+class DataLoader(ABC):
+    def __init__(self, artifact_repo: ArtifactRepository):
+        self._artifact_repo = artifact_repo
 
     @property
-    def save_dir_path(self):
-        return os.path.join(RAW_DATA_DIR, self.save_dir)
+    def artifact_repo(self):
+        return self._artifact_repo
 
     @abstractmethod
-    def download(self, *args, **kwargs):
+    def download(self, artifact_repo: ArtifactRepository) -> ArtifactRepository:
         pass

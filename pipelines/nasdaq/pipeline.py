@@ -6,14 +6,13 @@ from preprocessors.nasdaq.preprocessor import (
 )
 from data_loaders.nasdaq.data_loader import NASDAQSymbolsDataLoader
 
-from pipelines.base import BasePipeline
+from pipelines.base import Pipeline
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
-class NASDAQSymbolsPipeline(BasePipeline):
+class NASDAQSymbolsPipeline(Pipeline):
     def __init__(self, save_dir: str = "nasdaq"):
         super.__init__(save_dir)
 

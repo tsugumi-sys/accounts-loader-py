@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from pipelines.common import PIPELINE_DATA_DIR
 
 
-class BasePipeline(ABC):
+class Pipeline(ABC):
     def __init__(self, save_dir: str):
         if save_dir is None:
             raise ValueError("`save_dir` should ne str, snstead of None.")

@@ -8,13 +8,12 @@ from dotenv import dotenv_values
 from polygon import RESTClient
 from polygon.rest.models.financials import Financials
 
-from data_loaders.base import BaseDataLoader
+from data_loaders.base import DataLoader
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
-class PolygonFinancialsDataLoader(BaseDataLoader):
+class PolygonFinancialsDataLoader(DataLoader):
     def __init__(self, save_dir: str = "polygon/financials"):
         super().__init__(save_dir)
         self.polygon_client = RESTClient(dotenv_values(".env").get("POLYGON_API_KEY"))

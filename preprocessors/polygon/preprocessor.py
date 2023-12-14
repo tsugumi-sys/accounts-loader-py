@@ -8,7 +8,6 @@ import pandas as pd
 from preprocessors.base import BasePreprocessor
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
 class PolygonFinancialsDataPreprocessor(BasePreprocessor):

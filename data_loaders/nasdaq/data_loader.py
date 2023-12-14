@@ -1,16 +1,18 @@
 # https://www.nasdaq.com/
-from enum import StrEnum
 import json
 import logging
 import os
+import tempfile
+from enum import StrEnum
 
 import requests
 
-from data_loaders.base import BaseDataLoader
-
+from data_loaders.common import RAW_DATA_DIR
+from data_loaders.base import DataLoader
+from stores.artifact.local_artifact_repo import LocalArtifactRepository
+from stores.artifact.base import ArtifactRepository
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 CUSTOM_USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:85.0) Gecko/20100101 Firefox/85.0"
@@ -28,9 +30,14 @@ def symbols_api_endpoint(exchange_name: Exchange):
     return f"https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&exchange={exchange_name}&download=true"
 
 
-class NASDAQSymbolsDataLoader(BaseDataLoader):
-    def __init__(self, save_dir: str = "nasdaq/nasdaq/symbols"):
-        super().__init__(save_dir)
+class NASDAQSymbolsDataLoader(DataLoader):
+    def __init__(
+        self,
+        artifact_repo: ArtifactRepository = LocalArtifactRepository(
+            os.path.join(RAW_DATA_DIR, "nasdaq/nasdaq/symbols")
+        ),
+    ):
+        super().__init__(artifact_repo)
         self.exchange_name = Exchange.NASDAQ
 
     def download(self):
@@ -46,13 +53,22 @@ class NASDAQSymbolsDataLoader(BaseDataLoader):
                 f"Request Failed with status code: {res.status_code}. All response body is the following: {res.text}"
             )
 
-        with open(os.path.join(self.save_dir_path, "data.json"), "w") as f:
-            json.dump(res.json().get("data").get("rows"), f)
+        with tempfile.TemporaryDirectory() as tempdirname:
+            local_file = os.path.join(tempdirname, "data.json")
+            with open(local_file, "w") as f:
+                json.dump(res.json().get("data").get("rows"), f)
+            self.artifact_repo.log_artifact(local_file)
+        return self.artifact_repo
 
 
-class NYSESymbolsDataLoader(BaseDataLoader):
-    def __init__(self, save_dir: str = "nasdaq/nyse/symbols"):
-        super().__init__(save_dir)
+class NYSESymbolsDataLoader(DataLoader):
+    def __init__(
+        self,
+        artifact_repo: ArtifactRepository = LocalArtifactRepository(
+            os.path.join(RAW_DATA_DIR, "nasdaq/nyse/symbols")
+        ),
+    ):
+        super().__init__(artifact_repo)
         self.exchange_name = Exchange.NYSE
 
     def download(self):
@@ -68,13 +84,22 @@ class NYSESymbolsDataLoader(BaseDataLoader):
                 f"Request Failed with status code: {res.status_code}. All response body is the following: {res.text}"
             )
 
-        with open(os.path.join(self.save_dir_path, "data.json"), "w") as f:
-            json.dump(res.json().get("data").get("rows"), f)
+        with tempfile.TemporaryDirectory() as tempdirname:
+            local_file = os.path.join(tempdirname, "data.json")
+            with open(os.path.join(local_file), "w") as f:
+                json.dump(res.json().get("data").get("rows"), f)
+            self.artifact_repo.log_artifact(local_file)
+        return self.artifact_repo
 
 
-class AMEXSymbolsDataLoader(BaseDataLoader):
-    def __init__(self, save_dir: str = "nasdaq/amex/symbols"):
-        super().__init__(save_dir)
+class AMEXSymbolsDataLoader(DataLoader):
+    def __init__(
+        self,
+        artifact_repo: ArtifactRepository = LocalArtifactRepository(
+            os.path.join(RAW_DATA_DIR, "nasdaq/amex/symbols")
+        ),
+    ):
+        super().__init__(artifact_repo)
         self.exchange_name = Exchange.AMEX
 
     def download(self):
@@ -91,5 +116,9 @@ class AMEXSymbolsDataLoader(BaseDataLoader):
                 f"Request Failed with status code: {res.status_code}. All response body is the following: {res.text}"
             )
 
-        with open(os.path.join(self.save_dir_path, "data.json"), "w") as f:
-            json.dump(res.json().get("data").get("rows"), f)
+        with tempfile.TemporaryDirectory() as tempdirname:
+            local_file = os.path.join(tempdirname, "data.json")
+            with open(local_file, "w") as f:
+                json.dump(res.json().get("data").get("rows"), f)
+            self.artifact_repo.log_artifact(local_file)
+        return self.artifact_repo
