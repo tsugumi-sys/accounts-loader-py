@@ -12,5 +12,5 @@ class DataLoader(ABC):
         return self._artifact_repo
 
     @abstractmethod
-    def download(self, artifact_repo: ArtifactRepository) -> ArtifactRepository:
+    def download(self, *args, **kwargs):
         pass

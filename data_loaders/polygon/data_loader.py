@@ -1,34 +1,50 @@
+import tempfile
 import json
 import logging
 import os
 import time
-from typing import List, Dict, Any, Iterator
+from typing import Any, Dict, Iterator, List
 
 from dotenv import dotenv_values
 from polygon import RESTClient
 from polygon.rest.models.financials import Financials
 
 from data_loaders.base import DataLoader
+from data_loaders.common import RAW_DATA_DIR
+from stores.artifact.base import ArtifactRepository
+from stores.artifact.local_artifact_repo import LocalArtifactRepository
 
 logger = logging.getLogger(__name__)
 
 
 class PolygonFinancialsDataLoader(DataLoader):
-    def __init__(self, save_dir: str = "polygon/financials"):
-        super().__init__(save_dir)
+    def __init__(
+        self,
+        artifact_repo: ArtifactRepository = LocalArtifactRepository(
+            os.path.join(RAW_DATA_DIR, "polygon/financials")
+        ),
+    ):
+        super().__init__(artifact_repo)
         self.polygon_client = RESTClient(dotenv_values(".env").get("POLYGON_API_KEY"))
         self.filing_date_gte = "2022-01-01"
         self.request_limit_min = 5
 
     def download(self, tickers: List[str]):
         request_count = 0
-        for ticker in tickers:
-            logger.info(f"Loading {ticker} data from Polygon ...")
-            self._avoid_request_limit(request_count)
-            request_count += 1
+        with tempfile.TemporaryDirectory() as tempdirname:
+            for ticker in tickers:
+                logger.info(f"Loading {ticker} data from Polygon ...")
+                self._avoid_request_limit(request_count)
+                request_count += 1
 
-            financials_data = self._extract_data(self._request_financials_data(ticker))
-            self._save_data(ticker, financials_data)
+                financials_data = self._extract_data(
+                    self._request_financials_data(ticker)
+                )
+
+                local_file = os.path.join(tempdirname, f"{ticker}_raw_data.json")
+                with open(local_file, "w") as f:
+                    json.dump(financials_data, f)
+            self.artifact_repo.log_artifacts(tempdirname)
 
     def _extract_data(self, data: Iterator[Financials]) -> Dict[str, Any]:
         financials_data = {}

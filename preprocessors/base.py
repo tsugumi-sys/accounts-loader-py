@@ -1,22 +1,18 @@
-import os
 from abc import ABC, abstractmethod
 
-from preprocessors.common import PREPROCESSED_DATA_DIR
+from stores.artifact.base import ArtifactRepository
 
 
 class BasePreprocessor(ABC):
-    def __init__(self, source_dir_path: str, save_dir: str):
-        if save_dir is None:
-            raise ValueError("`save_dir` should be str, instead of None.")
-        if not os.path.exists(source_dir_path):
-            raise ValueError(f"`source_dir_path`: {source_dir_path} not found")
-        self.save_dir = save_dir
-        os.makedirs(self.save_dir_path, exist_ok=True)
-        self.source_dir_path = source_dir_path
+    def __init__(
+        self,
+        artifact_repo: ArtifactRepository,
+    ):
+        self._artifact_repo = artifact_repo
 
     @property
-    def save_dir_path(self):
-        return os.path.join(PREPROCESSED_DATA_DIR, self.save_dir)
+    def artifact_repo(self) -> ArtifactRepository:
+        return self._artifact_repo
 
     @abstractmethod
     def process(self, *args, **kwargs):

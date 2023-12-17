@@ -33,12 +33,18 @@ def symbols_api_endpoint(exchange_name: Exchange):
 class NASDAQSymbolsDataLoader(DataLoader):
     def __init__(
         self,
-        artifact_repo: ArtifactRepository = LocalArtifactRepository(
-            os.path.join(RAW_DATA_DIR, "nasdaq/nasdaq/symbols")
-        ),
+        artifact_repo: ArtifactRepository,
+        artifact_filename_json: str = "data.json",
     ):
         super().__init__(artifact_repo)
+        self.artifact_filename_json = artifact_filename_json
         self.exchange_name = Exchange.NASDAQ
+
+    @property
+    def artifact_path(self):
+        return os.path.join(
+            self.artifact_repo.artifact_dir, self.artifact_filename_json
+        )
 
     def download(self):
         logger.info(
@@ -54,24 +60,29 @@ class NASDAQSymbolsDataLoader(DataLoader):
             )
 
         with tempfile.TemporaryDirectory() as tempdirname:
-            local_file = os.path.join(tempdirname, "data.json")
+            local_file = os.path.join(tempdirname, self.artifact_filename_json)
             with open(local_file, "w") as f:
                 json.dump(res.json().get("data").get("rows"), f)
             self.artifact_repo.log_artifact(local_file)
-        return self.artifact_repo
 
 
 class NYSESymbolsDataLoader(DataLoader):
     def __init__(
         self,
-        artifact_repo: ArtifactRepository = LocalArtifactRepository(
-            os.path.join(RAW_DATA_DIR, "nasdaq/nyse/symbols")
-        ),
+        artifact_repo: ArtifactRepository,
+        artifact_filename_json: str = "data.json",
     ):
         super().__init__(artifact_repo)
+        self.artifact_filename_json = artifact_filename_json
         self.exchange_name = Exchange.NYSE
 
-    def download(self):
+    @property
+    def artifact_path(self):
+        return os.path.join(
+            self.artifact_repo.artifact_dir, self.artifact_filename_json
+        )
+
+    def download(self) -> ArtifactRepository:
         logger.info(
             f"Loading {self.exchange_name.upper()} symbols data from `https://www.nasdaq.com/`"
         )
@@ -85,24 +96,29 @@ class NYSESymbolsDataLoader(DataLoader):
             )
 
         with tempfile.TemporaryDirectory() as tempdirname:
-            local_file = os.path.join(tempdirname, "data.json")
+            local_file = os.path.join(tempdirname, self.artifact_filename_json)
             with open(os.path.join(local_file), "w") as f:
                 json.dump(res.json().get("data").get("rows"), f)
             self.artifact_repo.log_artifact(local_file)
-        return self.artifact_repo
 
 
 class AMEXSymbolsDataLoader(DataLoader):
     def __init__(
         self,
-        artifact_repo: ArtifactRepository = LocalArtifactRepository(
-            os.path.join(RAW_DATA_DIR, "nasdaq/amex/symbols")
-        ),
+        artifact_repo: ArtifactRepository,
+        artifact_filename_json: str = "data.json",
     ):
         super().__init__(artifact_repo)
+        self.artifact_filename_json = artifact_filename_json
         self.exchange_name = Exchange.AMEX
 
-    def download(self):
+    @property
+    def artifact_path(self):
+        return os.path.join(
+            self.artifact_repo.artifact_dir, self.artifact_filename_json
+        )
+
+    def download(self) -> ArtifactRepository:
         logger.info(
             f"Loading {self.exchange_name.upper()} symbols data from `https://www.nasdaq.com/`"
         )
@@ -117,8 +133,7 @@ class AMEXSymbolsDataLoader(DataLoader):
             )
 
         with tempfile.TemporaryDirectory() as tempdirname:
-            local_file = os.path.join(tempdirname, "data.json")
+            local_file = os.path.join(tempdirname, self.artifact_filename_json)
             with open(local_file, "w") as f:
                 json.dump(res.json().get("data").get("rows"), f)
             self.artifact_repo.log_artifact(local_file)
-        return self.artifact_repo

@@ -6,9 +6,9 @@ def main():
     # pipeline = NASDAQSymbolsPipeline()
     # pipeline.run()
 
-    data_loader = AMEXSymbolsDataLoader()
-    repo = data_loader.download()
-    print(repo.list_artifacts())
+    # data_loader = AMEXSymbolsDataLoader()
+    # repo = data_loader.download()
+    # print(repo.list_artifacts())
 
     # repo = LocalArtifactRepository("test_repo")
     # repo.log_artifact("./financials.csv")
